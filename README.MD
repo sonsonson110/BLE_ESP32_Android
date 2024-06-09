@@ -8,6 +8,7 @@
 
 ## Hierachy
 ![Hierachy](https://i0.wp.com/randomnerdtutorials.com/wp-content/uploads/2021/11/GATT-ESP32-BLE-Server-Client-Example.png?w=750&quality=100&strip=all&ssl=1)
+
 image from https://randomnerdtutorials.com/esp32-ble-server-client/ tutorial
 ### GATT: generic attributes
 - Defines an hierarchical data structure
