@@ -15,8 +15,7 @@
     <!-- Needed only if your app looks for Bluetooth devices -->
     <uses-permission
         android:name="android.permission.BLUETOOTH_SCAN"
-        android:usesPermissionFlags="neverForLocation"
-        tools:targetApi="s" />
+        android:usesPermissionFlags="neverForLocation"/>
 
     <!-- Needed only if your app communicates with already-paired Bluetooth
          devices. -->

@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.example.ble_client.samples.BleScan
 import com.example.ble_client.samples.BleScanIntent
+import com.example.ble_client.samples.ConnectGATT
 import com.example.ble_client.ui.theme.BLE_ClientTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +30,7 @@ class MainActivity : ComponentActivity() {
             BLE_ClientTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        BleScan()
+                        ConnectGATT()
                     }
                 }
             }

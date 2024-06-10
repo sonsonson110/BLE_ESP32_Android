@@ -25,3 +25,11 @@ first (little endian)."
 
 # Android BLE Client
 Updating...
+
+## Research topics, blogs and samples
+- https://developer.android.com/develop/connectivity/bluetooth/ble/ble-overview
+- https://punchthrough.com/android-ble-guide/
+- https://github.com/android/platform-samples/tree/main/samples/connectivity/bluetooth/ble
+
+## Some buggy bugs encountered
+- Read (with indicate || notify descriptor) - it's critical to use legacy deprecated api for android below 13: https://stackoverflow.com/questions/25865587/android-4-3-bluetooth-ble-dont-called-oncharacteristicread

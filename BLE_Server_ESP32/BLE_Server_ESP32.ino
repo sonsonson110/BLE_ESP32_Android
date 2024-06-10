@@ -53,14 +53,14 @@ void initBle() {
 
   pCharacteristic = pService->createCharacteristic(
                       CHARACTERISTIC_UUID,
-                      BLECharacteristic::PROPERTY_NOTIFY
+                      BLECharacteristic::PROPERTY_NOTIFY  
                     );
 
   // create BLE descriptor - Further characteristic desciption
   pDescr = new BLEDescriptor((uint16_t)0x2901);
   pDescr->setValue("Data from MPU-6050, including temperature, gyroscope and acceleration");
   pCharacteristic->addDescriptor(pDescr);
-  // default descriptor
+  // notification descriptor
   pBLE2902 = new BLE2902();
   pBLE2902->setNotifications(true);
   pCharacteristic->addDescriptor(pBLE2902);
@@ -86,7 +86,7 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
+  delay(500);
   if (deviceConnected) {
       // Get new sensor events with the readings
       mpu.getEvent(&a, &g, &temp);
@@ -94,6 +94,7 @@ void loop() {
       // notify changed value
       pCharacteristic->setValue(temp.temperature);
       pCharacteristic->notify();
+      Serial.print("Notified: "); Serial.println(temp.temperature);
   }
 
   // disconnecting
