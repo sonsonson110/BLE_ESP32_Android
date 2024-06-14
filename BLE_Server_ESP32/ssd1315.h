@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#define NUMICONS     5
+#define NUMICONS     4
 #define LOGO_HEIGHT   16
 #define LOGO_WIDTH    16
 

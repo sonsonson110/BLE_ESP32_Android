@@ -77,6 +77,7 @@ void findNonOverlappingPosition(int f, int8_t& x, int8_t& y, int width, int heig
         overlap = true;
         break;
       }
+      Serial.printf("Failed: x: %d - y: %d\n", x, y);
     }
   } while (overlap);
 }
@@ -112,7 +113,7 @@ void updateTempStatus(Adafruit_SSD1306* display, float temp) {
 }
 
 void updateAnimation(Adafruit_SSD1306* display) {
-  // Draw each snowflake:
+  // Draw each icon:
   for (int f = 0; f < NUMICONS; f++) {
     display->drawBitmap(icons[f][XPOS], icons[f][YPOS], bitmaps[f], LOGO_WIDTH, LOGO_HEIGHT, SSD1306_WHITE);
   }
