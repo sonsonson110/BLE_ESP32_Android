@@ -96,7 +96,7 @@ void initSsd1315(Adafruit_SSD1306* display) {
     icons[f][XPOS] = pos;
     pos += LOGO_WIDTH + random(1, 4);
     icons[f][YPOS] = YOFFSET + random(0, LOGO_HEIGHT);
-    icons[f][DELTAY] = random(1, 3);
+    icons[f][DELTAY] = random(1, 5);
     bitmaps[f] = getRandomBitmap();
   }
 }
@@ -123,7 +123,7 @@ void updateAnimation(Adafruit_SSD1306* display) {
     if (icons[f][YPOS] >= display->height()) {
       // Reinitialize to a random position, just off the top
       findNonOverlappingPosition(f, icons[f][XPOS], icons[f][YPOS], LOGO_WIDTH, LOGO_HEIGHT, display->width(), display->height());
-      icons[f][DELTAY] = random(1, 3);
+      icons[f][DELTAY] = random(1, 5);
       bitmaps[f] = getRandomBitmap();
     }
   }
