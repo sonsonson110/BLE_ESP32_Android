@@ -42,5 +42,4 @@ void initBle(BLEServer *&pServer, BLECharacteristic*& pCharacteristic, MyBLEServ
   pAdvertising->setScanResponse(false);
   pAdvertising->setMinPreferred(0x00);
   BLEDevice::startAdvertising();
-  Serial.println("Characteristic defined! Now you can read it in your phone!");
 }

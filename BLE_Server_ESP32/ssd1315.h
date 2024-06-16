@@ -1,5 +1,8 @@
 #include <Arduino.h>
 
+#define SCREEN_WIDTH 128  
+#define SCREEN_HEIGHT 64
+
 #define NUMICONS     4
 #define LOGO_HEIGHT   16
 #define LOGO_WIDTH    16

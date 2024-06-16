@@ -77,7 +77,6 @@ void findNonOverlappingPosition(int f, int8_t& x, int8_t& y, int width, int heig
         overlap = true;
         break;
       }
-      Serial.printf("Failed: x: %d - y: %d\n", x, y);
     }
   } while (overlap);
 }
@@ -85,10 +84,10 @@ void findNonOverlappingPosition(int f, int8_t& x, int8_t& y, int width, int heig
 void initSsd1315(Adafruit_SSD1306* display) {
   // Display setup
   if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println(F("SSD1306 allocation failed"));
     for (;;)
       ;
   }
+  display->display();
   delay(2000);
   display->clearDisplay();
   // Initialize 'icon' positions
