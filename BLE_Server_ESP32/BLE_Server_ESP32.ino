@@ -25,25 +25,36 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // MPU6050 setup
 Adafruit_MPU6050 mpu;
 
+int uiState = 0;
+
 void setup() {
   Serial.begin(115200);
   // Internal LED define
   pinMode(LED_PIN, OUTPUT);
   // Display setup
   initSsd1315(&display);
-  // MPU6050
+
+  // MPU setup
+  displayInitProcess(&display, "mpu6050", 0.4);
   initMpu6050(&mpu);
+  delay(1000);
   // BLE
+  displayInitProcess(&display, "ble", 0.6);
   MyBLEServerCallbacks* callbacks = new MyBLEServerCallbacks(&deviceConnected);
   initBle(pServer, pCharacteristic, callbacks);
+  delay(1000);
   // Wifi
+  displayInitProcess(&display, "wifi", 0.8);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) 
+  while (WiFi.status() != WL_CONNECTED)
     delay(1000);
   // Fetch weather
+  displayInitProcess(&display, "web api", 0.9);
   fetchWeather();
+  fetchLocation();
 
-  Serial.println(F("Set up completed"));
+  displayInitProcess(&display, "loop()", 1);
+  delay(2000);
 }
 
 void loop() {
@@ -53,37 +64,44 @@ void loop() {
 
   // Read value from ESP32 touch sensor
   int touchValue = touchRead(TOUCH_PIN);
-  if (touchValue <= TOUCH_THRESHOLD)
+  if (touchValue <= TOUCH_THRESHOLD) {
+    uiState = uiState + 1;
     digitalWrite(LED_PIN, HIGH);
-  else
+  } else
     digitalWrite(LED_PIN, LOW);
 
-  // Drawing and do ble stuff if connected
-  display.clearDisplay();  // Clear the display buffer
-  if (deviceConnected) {
-    // Notify changed value
-    pCharacteristic->setValue(temp.temperature);
-    pCharacteristic->notify();
-    drawBlePairedStatus(&display);
-    isAdvertising = false;
-  } else {
-    // Draw idle screen
-    updateTempStatus(&display, temp.temperature);
-    updateAnimation(&display);
-  }
-  display.display();  // Show the display buffer on the screen
+  display.clearDisplay();
+  switch (uiState % 2) {
+    case 0:
+      if (deviceConnected) {
+        // Notify changed value
+        pCharacteristic->setValue(temp.temperature);
+        pCharacteristic->notify();
+        drawBlePairedStatus(&display);
+        isAdvertising = false;
+      } else {
+        // Draw idle screen
+        updateTempStatus(&display, temp.temperature);
+        updateAnimation(&display);
+      }
 
-  // disconnecting
-  if (!deviceConnected && oldDeviceConnected && !isAdvertising) {
-    delay(500);                   // give the bluetooth stack the chance to get things ready
-    pServer->startAdvertising();  // restart advertising
-    isAdvertising = true;
-  }
+      // disconnecting
+      if (!deviceConnected && oldDeviceConnected && !isAdvertising) {
+        delay(500);
+        pServer->startAdvertising();
+        isAdvertising = true;
+      }
 
-  // connecting
-  if (deviceConnected && !oldDeviceConnected) {
-    // do stuff here on connecting
-    oldDeviceConnected = deviceConnected;
+      // connecting
+      if (deviceConnected && !oldDeviceConnected) {
+        // do stuff here on connecting
+        oldDeviceConnected = deviceConnected;
+      }
+      break;
+    case 1:
+      mpu6050Screen(&display, a, g);
+      break;
   }
-  delay(200);  // Pause for 1/10 second
+  display.display();
+  delay(100);  // Pause for 1/10 second
 }

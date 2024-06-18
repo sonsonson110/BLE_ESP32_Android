@@ -11,6 +11,6 @@ void initMpu6050(Adafruit_MPU6050 *mpu) {
 
   // Set up sensor range
   mpu->setAccelerometerRange(MPU6050_RANGE_8_G);
-  mpu->setGyroRange(MPU6050_RANGE_500_DEG);
+  mpu->setGyroRange(MPU6050_RANGE_250_DEG);
   mpu->setFilterBandwidth(MPU6050_BAND_21_HZ);
 }

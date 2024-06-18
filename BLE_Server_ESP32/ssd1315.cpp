@@ -1,5 +1,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <Adafruit_Sensor.h>
 #include <Wire.h>
 
 #include "ssd1315.h"
@@ -81,15 +82,26 @@ void findNonOverlappingPosition(int f, int8_t& x, int8_t& y, int width, int heig
   } while (overlap);
 }
 
+void displayInitProcess(Adafruit_SSD1306* display, char* componentName, float p) {
+  display->clearDisplay();
+  display->drawRect(15, 13, 96, 16, 1);
+  display->fillRect(17, 15, 92 * p, 12, 1);
+  display->setTextColor(1);
+  display->setCursor(15, 37);
+  display->print("connecting to:");
+  int endPosition = 111 - strlen(componentName) * 6;
+  display->setCursor(endPosition, 49);
+  display->print(componentName);
+  display->display();
+}
+
 void initSsd1315(Adafruit_SSD1306* display) {
   // Display setup
   if (!display->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
     for (;;)
       ;
   }
-  display->display();
-  delay(2000);
-  display->clearDisplay();
+  displayInitProcess(display, "screen", 0.2);
   // Initialize 'icon' positions
   int8_t pos = 0;
   for (int f = 0; f < NUMICONS; f++) {
@@ -131,4 +143,96 @@ void updateAnimation(Adafruit_SSD1306* display) {
 
 void drawBlePairedStatus(Adafruit_SSD1306* display) {
   display->drawBitmap(0, 0, ble_paired_bmp, display->width(), display->height(), 1);
+}
+
+int mapValue(float value, int type) {
+  const int xMin = 9;
+  const int xMid = 52;
+  const int xMax = 88;
+
+  float minValue;
+  float midValue = 0.0;
+  float maxValue;
+
+  if (type == GYRO) {
+    minValue = -MAX_GYRO_VAL;
+    maxValue = MAX_GYRO_VAL;
+  } else {
+    minValue = -MAX_ACC_VAL;
+    maxValue = MAX_ACC_VAL;
+  }
+
+  int x;
+  if (value <= midValue) {
+    x = xMin + ((value - minValue) / (midValue - minValue)) * (xMid - xMin);
+  } else {
+    x = xMid + ((value - midValue) / (maxValue - midValue)) * (xMax - xMid);
+  }
+
+  return x;
+}
+
+void mpu6050Screen(Adafruit_SSD1306* display, sensors_event_t a, sensors_event_t g) {
+  display->setTextColor(1);
+  display->setTextSize(1);
+  display->setCursor(0, 0);
+  display->print("Gyro:");
+  display->setCursor(0, 34);
+  display->print("Acceleration:");
+  display->setCursor(0, 8);
+  display->print("x");
+  display->setCursor(0, 24);
+  display->print("z");
+  display->setCursor(0, 15);
+  display->print("y");
+
+  int gyroX = mapValue(g.gyro.x, GYRO);
+  display->drawLine(52, 11, gyroX, 11, 1);
+  display->drawLine(52, 12, gyroX, 12, 1);
+  display->drawLine(52, 13, gyroX, 13, 1);
+
+  int gyroY = mapValue(g.gyro.y, GYRO);
+  display->drawLine(52, 19, gyroY, 19, 1);
+  display->drawLine(52, 20, gyroY, 20, 1);
+  display->drawLine(52, 21, gyroY, 21, 1);
+
+  int gyroZ = mapValue(g.gyro.z, GYRO);
+  display->drawLine(52, 27, gyroZ, 27, 1);
+  display->drawLine(52, 28, gyroZ, 28, 1);
+  display->drawLine(52, 29, gyroZ, 29, 1);
+
+  int accX = mapValue(a.acceleration.x, ACCELERATION);
+  display->drawLine(52, 44, accX, 44, 1);
+  display->drawLine(52, 45, accX, 45, 1);
+  display->drawLine(52, 46, accX, 46, 1);
+
+  int accY = mapValue(a.acceleration.y, ACCELERATION);
+  display->drawLine(52, 52, accY, 52, 1);
+  display->drawLine(52, 53, accY, 53, 1);
+  display->drawLine(52, 54, accY, 54, 1);
+
+  int accZ = mapValue(a.acceleration.z, ACCELERATION);
+  display->drawLine(52, 60, accZ, 60, 1);
+  display->drawLine(52, 61, accZ, 61, 1);
+  display->drawLine(52, 62, accZ, 62, 1);
+
+  display->setCursor(0, 41);
+  display->print("x");
+  display->setCursor(0, 57);
+  display->print("z");
+  display->setCursor(0, 48);
+  display->print("y");
+
+  display->setCursor(99, 8);
+  display->print(g.gyro.x, 1);
+  display->setCursor(99, 16);
+  display->print(g.gyro.y, 1);
+  display->setCursor(99, 24);
+  display->print(g.gyro.z, 1);
+  display->setCursor(99, 41);
+  display->print(a.acceleration.x, 1);
+  display->setCursor(99, 49);
+  display->print(a.acceleration.y, 1);
+  display->setCursor(99, 57);
+  display->print(a.acceleration.z, 1);
 }
