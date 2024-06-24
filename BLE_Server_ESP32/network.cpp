@@ -3,10 +3,11 @@
 #include "network.h"
 
 HTTPClient http;
-const char* ssid = "";
-const char* password = "";
+const char* ssid = "Pson";
+const char* password = "bosuacamon";
 const char* weatherEndpoint = "http://api.openweathermap.org/data/2.5/weather?units=metric&";
-const char* weatherApiKey = "";
+const char* weatherApiKey = "9ea8f4657c218a1a8eb048d9ebaba4d9";
+const char* locationEndpoint = "http://ip-api.com/json/";
 
 void buildWeatherEndpoint(float lon, float lat, char* endpoint, size_t endpointSize) {
   snprintf(endpoint, endpointSize, "%slat=%.5f&lon=%.5f&appid=%s", weatherEndpoint, lat, lon, weatherApiKey);
@@ -37,19 +38,33 @@ String httpGETRequest(const char* serverName) {
   return payload;
 }
 
-void fetchWeather() {
-  // Replace programatically later
-  float lon = 105.8342;
-  float lat = 21.0278;
+void fetchLocation(float* lon, float* lat) {
+  String jsonBuffer = httpGETRequest(locationEndpoint);
+  JSONVar locationObj = JSON.parse(jsonBuffer);
+
+  if (JSON.typeof(locationObj) == "undefined") {
+    Serial.println("Parsing input failed!");
+    return;
+  }
+
+  *lon = (double)locationObj["lon"];
+  *lat = (double)locationObj["lat"];
+}
+
+void fetchWeather(char* description, size_t descriptionSize) {
+  float lon;
+  float lat;
+  fetchLocation(&lon, &lat);
+
   char endpoint[200];
   buildWeatherEndpoint(lon, lat, endpoint, sizeof(endpoint));
 
   String jsonBuffer = httpGETRequest(endpoint);
-  JSONVar weatherObj = JSON.parse(jsonBuffer);
+  // JSONVar weatherObj = JSON.parse(jsonBuffer);
 
-  if (JSON.typeof(weatherObj) == "undefined") {
-    Serial.println("Parsing input failed!");
-    return;
-  }
-  Serial.print("Temp: "); Serial.println(weatherObj["main"]["temp"]);
+  // if (JSON.typeof(weatherObj) == "undefined") {
+  //   Serial.println("Parsing input failed!");
+  //   return;
+  const char* result = jsonBuffer.c_str();
+  snprintf(description, descriptionSize, "%s", result);
 }

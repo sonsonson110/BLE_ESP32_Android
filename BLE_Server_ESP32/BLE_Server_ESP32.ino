@@ -24,7 +24,8 @@ bool isAdvertising = true;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 // MPU6050 setup
 Adafruit_MPU6050 mpu;
-
+// Weather
+char weatherDescription[1024];
 int uiState = 0;
 
 void setup() {
@@ -50,9 +51,8 @@ void setup() {
     delay(1000);
   // Fetch weather
   displayInitProcess(&display, "web api", 0.9);
-  fetchWeather();
-  fetchLocation();
-
+  fetchWeather(weatherDescription, sizeof(weatherDescription));
+  
   displayInitProcess(&display, "loop()", 1);
   delay(2000);
 }
@@ -71,7 +71,7 @@ void loop() {
     digitalWrite(LED_PIN, LOW);
 
   display.clearDisplay();
-  switch (uiState % 2) {
+  switch (uiState % 3) {
     case 0:
       if (deviceConnected) {
         // Notify changed value
@@ -100,6 +100,9 @@ void loop() {
       break;
     case 1:
       mpu6050Screen(&display, a, g);
+      break;
+    case 2: 
+      weatherScreen(&display, weatherDescription);
       break;
   }
   display.display();

@@ -23,3 +23,4 @@ void updateTempStatus(Adafruit_SSD1306 *display, float temp);
 void updateAnimation(Adafruit_SSD1306 *display);
 void drawBlePairedStatus(Adafruit_SSD1306* display);
 void mpu6050Screen(Adafruit_SSD1306* display, sensors_event_t a, sensors_event_t g);
+void weatherScreen(Adafruit_SSD1306* display, char* description);
